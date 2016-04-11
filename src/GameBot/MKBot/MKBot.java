@@ -50,24 +50,9 @@ public class MKBot extends GameBot {
         //      Update current move
         //      Check the time and maybee exit
         int i=0; // TODO Fix a timer
-        if(root.getNumberOfChildren() > 0){
-            do{
-                    Node.resetTraversedCounter();
-                    if(!(i<3)){ // TODO Fix a timer
-                        break; // TODO return gracefully
-                    }
-            }while(!root.updateLeafNodeValues());
-            root.updateBranchValue();
-            move = root.getBestMove();
-        }
         while(i<3){ // TODO Fix a timer
             root.spawnNewChildTier();
-            do{
-                Node.resetTraversedCounter();
-                if(!(i<3)){ // TODO Fix a timer
-                    break; // TODO return gracefully
-                }
-            }while(!root.updateLeafNodeValues());
+            root.updateLeafNodeValues();
             root.updateBranchValue();
             move = root.getBestMove();
             i++; // TODO Fix a timer

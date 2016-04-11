@@ -10,8 +10,6 @@ public class Node{
     private double nodeValue;
     private double branchValue;
     private static double DEFAULT_NODE_VALUE = -1;
-    private static int traversedCounter;
-    private static int TRAVERSE_THRESHOLD = 30;
     
     public Node(){
         parrent = null;
@@ -61,26 +59,14 @@ public class Node{
         return nodeValue;
     }
     
-    public boolean updateLeafNodeValues(){
+    public void updateLeafNodeValues(){
         if(children.size() > 0){
-            boolean done = 1;
             for(Node n : children){
-                done = done * n.updateLeafNodeValues();
+                n.updateLeafNodeValues();
             }
-            return done;
         }else if(nodeValue == DEFAULT_NODE_VALUE){
             computeNodeValue();
-            traversedCounter++;
         }
-        if(traversedCounter < TRAVERSE_THRESHOLD){
-            return 1;
-        }else{
-            return 0;
-        }
-    }
-    
-    public void resetTraversedCounter(){
-        traversedCounter = 0;
     }
     
     public double updateBranchValue(){
