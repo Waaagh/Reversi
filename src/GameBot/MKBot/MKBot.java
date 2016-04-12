@@ -3,6 +3,7 @@ package GameBot.MKBot;
 import Board.ReversiBoard;
 import Board.Move;
 import GameBot.GameBot;
+import GameBot.MKBot.Node;
 
 import java.util.ArrayList;
 
@@ -25,6 +26,7 @@ public class MKBot extends GameBot {
         this.isRunning = true;
         
         // Safety measure, set the move to something valid
+        /*
         ArrayList<Move> list = reversiBoard.allPotentialMoves(color);
         Move move = null;
         if(list.size() > 0) {
@@ -33,15 +35,17 @@ public class MKBot extends GameBot {
             move = new Move(true);
         }
         this.setMove(move);
+        */
         
         // Create or prune the tree
         if(root == null){ // Create the tree if it is not existing
-            root = new Node( null, null, 1, reversiBoard);
+            root = new Node(color, null, null, color, reversiBoard);
         }else{ // Prune the tree and keep only the branch of the move just executed
-            root = root.findChildByMove(allPreviousMoves.get(allPreviousMoves.size()-2)); // Protagonists last move
-            root = root.findChildByMove(allPreviousMoves.get(allPreviousMoves.size()-1)); // Opponents last move
+            if(root.getNumberOfChildren() > 0)
+                root = root.findChildByMove(allPreviousMoves.get(allPreviousMoves.size()-2)); // Protagonists last move
+            if(root.getNumberOfChildren() > 0)
+                root = root.findChildByMove(allPreviousMoves.get(allPreviousMoves.size()-1)); // Opponents last move
         }
-        
         // Start or continue the breadth first search
         //      Check if latest tier are done
         //      Spawn next tier or continue on last tier
@@ -50,11 +54,11 @@ public class MKBot extends GameBot {
         //      Update current move
         //      Check the time and maybee exit
         int i=0; // TODO Fix a timer
-        while(i<3){ // TODO Fix a timer
+        while(i<2){ // TODO Fix a timer
             root.spawnNewChildTier();
             root.updateLeafNodeValues();
             root.updateBranchValue();
-            move = root.getBestMove();
+            this.setMove(root.getBestMove());
             i++; // TODO Fix a timer
         }
         

@@ -46,7 +46,7 @@ abstract public class GameBot {
      * @return The move that the bot has chosen so far.
      */
     public Move getMove(){
-        return this.move;
+        return this.move.copy();
     }
 
     /**

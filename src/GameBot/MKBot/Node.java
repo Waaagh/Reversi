@@ -1,8 +1,14 @@
 package GameBot.MKBot;
 
+import java.util.List;
+import java.util.ArrayList;
+import Board.Move;
+import Board.ReversiBoard;
+
 public class Node{
+    private int protagonist;
     private Node parrent;
-    private List children;
+    private List<Node> children;
     private Move moveToGetHere;
     private Node bestChild;
     private int activePlayer; // The protagonist player is always 1 and the opponent is always 2
@@ -12,6 +18,7 @@ public class Node{
     private static double DEFAULT_NODE_VALUE = -1;
     
     public Node(){
+        protagonist = 1;
         parrent = null;
         children = new ArrayList<Node>();
         moveToGetHere = null;
@@ -22,12 +29,13 @@ public class Node{
         branchValue = DEFAULT_NODE_VALUE;
     }
 
-    public Node(Node parrent, Move moveToGetHere, double activePlayer, ReversiBoard board){
+    public Node(int protagonist, Node parrent, Move moveToGetHere, int activePlayer, ReversiBoard board){
+        this.protagonist = protagonist;
         this.parrent = parrent;
         children = new ArrayList<Node>();
         this.moveToGetHere = moveToGetHere;
         bestChild = null;
-        this.activePlayer = 1;
+        this.activePlayer = activePlayer;
         this.board = board;
         this.nodeValue = DEFAULT_NODE_VALUE;
         this.branchValue = DEFAULT_NODE_VALUE;
@@ -38,7 +46,7 @@ public class Node{
         for(Move m : allPotentialMoves){
             ReversiBoard newBoard = board.copy();
             newBoard.doMove(m, activePlayer);
-            children.add(new Node(this, m, 3-activePlayer, newBoard));
+            children.add(new Node(protagonist, this, m, 3-activePlayer, newBoard));
         }
     }
     
@@ -71,7 +79,7 @@ public class Node{
     
     public double updateBranchValue(){
         double tmpValue = 0;
-        if(activePlayer == 1){
+        if(activePlayer == protagonist){
             branchValue = -1 * Double.POSITIVE_INFINITY;
         }else{
             branchValue = Double.POSITIVE_INFINITY;
@@ -79,7 +87,7 @@ public class Node{
         if(children.size() > 0){
             for(Node n : children){
                 tmpValue = n.updateBranchValue();
-                if((tmpValue > branchValue && activePlayer == 1) || (tmpValue < branchValue && activePlayer == 2)){
+                if((tmpValue > branchValue && activePlayer == protagonist) || (tmpValue < branchValue && activePlayer != protagonist)){
                     branchValue = tmpValue;
                     bestChild = n;
                 }
@@ -100,7 +108,11 @@ public class Node{
     }
     
     public Move getBestMove(){
-        return bestChild.moveToGetHere.copy();
+        if(children.size() > 0 && bestChild.moveToGetHere != null){
+            return bestChild.moveToGetHere.copy();
+        }else{
+            return new Move(true); // pass
+        }
     }
     
     public int getNumberOfChildren(){
